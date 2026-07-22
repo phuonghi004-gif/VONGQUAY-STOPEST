@@ -1,10 +1,10 @@
-// Cấu hình màu sắc nhã nhặn, chữ hiển thị rõ ràng
+// Cấu hình 5 ô xen kẽ hai màu Đỏ thẫm (#a30000) và Trắng (#ffffff)
 const prizes = [
-    { text: "10%", color: "#ff9966", textColor: "#ffffff" },
-    { text: "20%", color: "#ffcc66", textColor: "#cc5500" },
-    { text: "30%", color: "#ff8888", textColor: "#ffffff" },
-    { text: "50%", color: "#ffdd99", textColor: "#cc5500" },
-    { text: "70%", color: "#ffaa66", textColor: "#ffffff" }
+    { text: "10%", color: "#a30000", textColor: "#ffffff" },
+    { text: "20%", color: "#ffffff", textColor: "#a30000" },
+    { text: "30%", color: "#a30000", textColor: "#ffffff" },
+    { text: "50%", color: "#ffffff", textColor: "#a30000" },
+    { text: "70%", color: "#a30000", textColor: "#ffffff" }
 ];
 
 const canvas = document.getElementById("wheelCanvas");
@@ -13,6 +13,7 @@ const numSegments = prizes.length;
 const segmentAngle = (2 * Math.PI) / numSegments;
 let isSpinning = false;
 
+// Hàm tự động tạo lập vòng quay
 function drawWheel() {
     if (!canvas || !ctx) return;
     const radius = canvas.width / 2;
@@ -22,33 +23,29 @@ function drawWheel() {
         const startAngle = i * segmentAngle;
         const endAngle = startAngle + segmentAngle;
 
-        // Vẽ phân vùng ô màu
         ctx.beginPath();
         ctx.moveTo(radius, radius);
         ctx.arc(radius, radius, radius - 2, startAngle, endAngle);
         ctx.fillStyle = prizes[i].color;
         ctx.fill();
         
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = "#ffffff"; 
+        // Viền kẻ mỏng màu đỏ phân tách các ô màu trắng và ngược lại
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = prizes[i].color === "#ffffff" ? "#a30000" : "#ffffff";
         ctx.stroke();
 
-        // Vẽ chữ hiển thị phần trăm (Đã xử lý chống lộn ngược đầu)
+        // Xử lý hướng chữ chuẩn tâm, ngăn chặn lật chữ ngược đầu
         ctx.save();
         ctx.translate(radius, radius);
-        
-        // Tính toán góc ở giữa của phân đoạn
         const midAngle = startAngle + segmentAngle / 2;
         ctx.rotate(midAngle);
         
-        // Căn chỉnh chữ hướng từ viền vào tâm để không bao giờ bị ngược chữ
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = prizes[i].textColor;
-        ctx.font = "bold 32px 'Segoe UI', Arial, sans-serif";
+        ctx.font = "bold 34px 'Segoe UI', Arial, sans-serif";
         
-        // Di chuyển chữ ra rìa vòng quay một khoảng vừa phải
-        ctx.fillText(prizes[i].text, radius * 0.65, 0);
+        ctx.fillText(prizes[i].text, radius * 0.62, 0);
         ctx.restore();
     }
 }
@@ -60,6 +57,7 @@ window.onload = function() {
         spinBtn.onclick = startSpin;
     }
 
+    // Tách biệt Khóa bảo mật cục bộ của Repo này sang bộ khóa v2 tránh đè dữ liệu
     const deviceHasSpun = localStorage.getItem('stopest_v2_device_spun');
     const savedPrize = localStorage.getItem('stopest_v2_device_prize');
 
@@ -69,7 +67,7 @@ window.onload = function() {
             spinBtn.disabled = true;
             spinBtn.innerText = "ĐÃ HẾT LƯỢT QUAY";
         }
-        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Thiết bị của bạn đã tham gia!";
+        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Thiết bị của bạn đã tham gia chương trình!";
         if (document.getElementById('result-text')) document.getElementById('result-text').innerText = savedPrize;
         if (document.getElementById('result-box')) document.getElementById('result-box').classList.remove('hidden');
     }
@@ -97,9 +95,10 @@ function startSpin() {
         return;
     }
 
+    // Độc lập kiểm tra chặn trùng lặp Số Điện Thoại
     let usedPhones = JSON.parse(localStorage.getItem('stopest_v2_used_phones')) || [];
     if (usedPhones.includes(phone)) {
-        alert("Số điện thoại này đã tham gia quay thưởng trước đó!");
+        alert("Số điện thoại này đã tham gia quay thưởng trước đó rồi!");
         return;
     }
 
@@ -107,7 +106,7 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    // Tỷ lệ trúng giải 70% là 15% (index số 4)
+    // Giữ tỷ lệ 15% cho giải 70% (nằm ở index thứ 4)
     const rand = Math.floor(Math.random() * 100) + 1;
     let prizeIndex = 0;
 
@@ -118,7 +117,7 @@ function startSpin() {
         prizeIndex = remainders[Math.floor(Math.random() * remainders.length)];
     }
     
-    // Thuật toán xoay khớp chuẩn với kim chỉ 12h đỉnh màn hình
+    // Căn góc dừng chính xác hướng tâm chỉ lên kim đỉnh 12h
     const targetAngleDegree = 270 - (prizeIndex * 72 + 36);
     const totalRotation = 2880 + targetAngleDegree; 
 
@@ -145,6 +144,7 @@ function startSpin() {
     }, 4000); 
 }
 
+// Hàm gửi dữ liệu chính xác về URL Google Form của bạn
 function sendDataToGoogle(name, phone, prize) {
     const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeboYa4TZbA28yF3Tnlf_EVdLgy7tYRNxIIOpLJjYtqJVNIbQ/formResponse";
     const prizeText = "Ưu đãi " + prize; 
