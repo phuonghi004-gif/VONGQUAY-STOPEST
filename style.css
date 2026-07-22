@@ -2,35 +2,75 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
-    background-color: #f4f6f9;
+    background-color: #f7f9fa;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 30px 15px;
 }
 
+/* Header logo phía trên */
+.brand-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.brand-logo {
+    max-width: 180px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.brand-container h1 {
+    color: #cc0000;
+    font-size: 1.6rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.brand-container p {
+    color: #555555;
+    font-size: 0.95rem;
+    margin-top: 5px;
+}
+
+/* Khung nội dung chính màu trắng bo góc */
 .container {
     background: #ffffff;
     max-width: 450px;
     width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: 25px 20px;
     text-align: center;
 }
 
-/* Khu vực hiển thị kết quả */
+.container h3 {
+    color: #cc0000;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #666666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+/* Hộp thông báo trúng giải */
 #result-box {
-    background: #fff9e6;
-    border: 2px dashed #ffcc00;
+    background: #fff5e6;
+    border: 1px dashed #ff9900;
     border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 25px;
+    padding: 12px;
+    margin-bottom: 15px;
 }
 
 #result-box.hidden {
@@ -38,91 +78,88 @@ body {
 }
 
 #status-message {
-    color: #a30000;
-    font-size: 1.2rem;
-    margin-bottom: 5px;
+    color: #cc0000;
+    font-size: 1.1rem;
 }
 
 #result-text {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    color: #ff8800;
+    color: #ff6600;
+    margin-top: 5px;
 }
 
-/* Khu vực Vòng quay dạng ảnh gốc */
-.wheel-container {
-    position: relative;
-    width: 320px;
-    height: 320px;
-    margin: 0 auto 30px auto;
-}
-
-#wheelImage {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    /* Hiệu ứng xoay mượt mà trong 4 giây */
-    transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1);
-}
-
-/* Kim chỉ phần thưởng ở đỉnh vòng quay */
-.pointer {
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
-    background: url('pointer.png') no-repeat center center/contain;
-    z-index: 10;
-}
-
-/* Form nhập liệu và nút bấm */
+/* Form điền thông tin */
 .form-container {
     width: 100%;
+    margin-bottom: 20px;
 }
 
 #input-fields input {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     margin-bottom: 12px;
-    border: 1px solid #cccccc;
-    border-radius: 8px;
-    font-size: 1rem;
+    border: 1px solid #e2e8f0;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+    font-size: 0.95rem;
     outline: none;
-    transition: border 0.3s;
 }
 
 #input-fields input:focus {
-    border-color: #a30000;
+    border-color: #ff8833;
+    background-color: #ffffff;
 }
 
+/* Vòng quay hiệu ứng */
+.wheel-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 25px auto;
+}
+
+#wheelCanvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+/* Kim chỉ hình tam giác đỏ chuẩn góc trên đỉnh */
+.pointer-triangle {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 20px solid #cc0000;
+    z-index: 10;
+}
+
+/* Nút bấm quay dưới cùng */
 #spin-btn {
     width: 100%;
     padding: 14px;
     background: #a30000;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(163, 0, 0, 0.3);
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s;
 }
 
 #spin-btn:hover {
     background: #820000;
 }
 
-#spin-btn:active {
-    transform: scale(0.98);
-}
-
 #spin-btn:disabled {
     background: #cccccc;
     color: #666666;
     cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
 }
