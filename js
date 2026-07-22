@@ -1,5 +1,4 @@
-// Cấu hình 20 ô để chia tỉ lệ phần trăm xác suất chính xác và xen kẽ màu đẹp mắt
-// Ô 70% xuất hiện đúng 3 lần (3 / 20 = 15% xác suất)
+// Cấu hình 20 ô cho VONGQUAY-STOPEST - Tỉ lệ 70% xuất hiện 3 lần (15%)
 const prizes = [
     { text: "10%", color: "#a30000", textColor: "#ffffff" },
     { text: "20%", color: "#ffffff", textColor: "#a30000" },
@@ -29,10 +28,9 @@ const prizes = [
 const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
 const numSegments = prizes.length;
-const segmentAngle = (2 * Math.PI) / numSegments; // Mỗi ô rộng 18 độ (360 / 20)
+const segmentAngle = (2 * Math.PI) / numSegments;
 let isSpinning = false;
 
-// Hàm vẽ vòng quay chuẩn màu và co chữ vừa với ô nhỏ
 function drawWheel() {
     if (!canvas) return;
     const radius = canvas.width / 2;
@@ -42,19 +40,16 @@ function drawWheel() {
         const startAngle = i * segmentAngle;
         const endAngle = startAngle + segmentAngle;
 
-        // Vẽ ô hình quạt
         ctx.beginPath();
         ctx.moveTo(radius, radius);
         ctx.arc(radius, radius, radius - 2, startAngle, endAngle);
         ctx.fillStyle = prizes[i].color;
         ctx.fill();
         
-        // Viền ô quay
         ctx.lineWidth = 1;
         ctx.strokeStyle = "#a30000";
         ctx.stroke();
 
-        // Vẽ văn bản chữ phần thưởng (giảm size font xuống 15px vì 20 ô nhỏ hơn)
         ctx.save();
         ctx.translate(radius, radius);
         ctx.rotate(startAngle + segmentAngle / 2);
@@ -74,9 +69,9 @@ window.onload = function() {
         spinBtn.addEventListener('click', startSpin);
     }
 
-    // Bảo mật thiết bị
-    const deviceHasSpun = localStorage.getItem('stopest_device_spun');
-    const savedPrize = localStorage.getItem('stopest_device_prize');
+    // Tách biệt bộ nhớ bằng key biệt lập (_v2) để không đụng hàng với web thứ 1
+    const deviceHasSpun = localStorage.getItem('stopest_v2_device_spun');
+    const savedPrize = localStorage.getItem('stopest_v2_device_prize');
 
     if (deviceHasSpun === 'true') {
         if (document.getElementById('input-fields')) document.getElementById('input-fields').style.display = 'none';
@@ -90,11 +85,10 @@ window.onload = function() {
     }
 };
 
-// Hàm bắt đầu quay, check SĐT và Thiết bị
 function startSpin() {
     if (isSpinning) return;
 
-    if (localStorage.getItem('stopest_device_spun') === 'true') {
+    if (localStorage.getItem('stopest_v2_device_spun') === 'true') {
         alert("Thiết bị này đã hết lượt quay!");
         return;
     }
@@ -110,12 +104,11 @@ function startSpin() {
         return;
     }
     if (!/^\d{9,11}$/.test(phone)) {
-        alert("Số điện thoại không hợp lệ (Phải từ 9 đến 11 số)!");
+        alert("Số điện thoại không hợp lệ!");
         return;
     }
 
-    // Khóa SĐT
-    let usedPhones = JSON.parse(localStorage.getItem('stopest_used_phones')) || [];
+    let usedPhones = JSON.parse(localStorage.getItem('stopest_v2_used_phones')) || [];
     if (usedPhones.includes(phone)) {
         alert("Số điện thoại này đã tham gia quay thưởng trước đó rồi!");
         return;
@@ -125,22 +118,20 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    // Chọn ngẫu nhiên 1 trong 20 ô (Tự động áp dụng tỉ lệ 15% cho ô 70%)
     const prizeIndex = Math.floor(Math.random() * numSegments);
     
-    // Thuật toán tính góc dừng tuyệt đối khớp tâm kim 12 giờ cho hệ 20 ô (Mỗi ô 18 độ)
-    // Kim chỉ nằm ở góc 270 độ. Tâm ô thứ i là: (i * 18) + 9.
+    // Thuật toán tính góc dừng chính xác ở tâm kim 12 giờ cho hệ 20 ô
     const targetAngleDegree = 270 - (prizeIndex * 18 + 9);
-    const totalRotation = 2880 + targetAngleDegree; // Quay 8 vòng lớn trước khi dừng
+    const totalRotation = 2880 + targetAngleDegree; 
 
     canvas.style.transform = `rotate(${totalRotation}deg)`;
 
     setTimeout(() => {
         const finalPrize = prizes[prizeIndex].text;
+        const displayPrize = "Ưu đãi " + finalPrize;
         
-        // Hiển thị giao diện thắng giải
         if (document.getElementById('result-text')) {
-            document.getElementById('result-text').innerText = "Ưu đãi " + finalPrize;
+            document.getElementById('result-text').innerText = displayPrize;
         }
         if (document.getElementById('result-box')) {
             document.getElementById('result-box').classList.remove('hidden');
@@ -155,25 +146,23 @@ function startSpin() {
             document.getElementById('input-fields').style.display = 'none';
         }
 
-        // KHOÁ THIẾT BỊ
-        localStorage.setItem('stopest_device_spun', 'true');
-        localStorage.setItem('stopest_device_prize', "Ưu đãi " + finalPrize);
+        // Lưu trạng thái độc lập cho web này
+        localStorage.setItem('stopest_v2_device_spun', 'true');
+        localStorage.setItem('stopest_v2_device_prize', displayPrize);
 
-        // KHOÁ SĐT
         usedPhones.push(phone);
-        localStorage.setItem('stopest_used_phones', JSON.stringify(usedPhones));
+        localStorage.setItem('stopest_v2_used_phones', JSON.stringify(usedPhones));
 
-        // Đẩy thông tin về Google Form
+        // Trả kết quả về đúng trang tính cũ
         sendDataToGoogle(fullname, phone, finalPrize);
 
         isSpinning = false;
     }, 4000); 
 }
 
-// Hàm gửi API ẩn về Google Form tự đóng tab
 function sendDataToGoogle(name, phone, prize) {
     const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeboYa4TZbA28yF3Tnlf_EVdLgy7tYRNxIIOpLJjYtqJVNIbQ/formResponse";
-    const prizeText = "Ưu đãi " + prize; // Đồng bộ cấu trúc chữ gửi về Trang tính
+    const prizeText = "Ưu đãi " + prize; 
     const finalUrl = `${baseUrl}?entry.810076137=${encodeURIComponent(name)}&entry.1928279920=${encodeURIComponent(phone)}&entry.2010302772=${encodeURIComponent(prizeText)}&submit=Submit`;
 
     const newWindow = window.open(finalUrl, '_blank');
