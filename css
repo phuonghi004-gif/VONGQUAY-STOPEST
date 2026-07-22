@@ -101,7 +101,9 @@ input:focus {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    transition: transform 4s cubic-bezier(0.1, 0.8, 0.25, 1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    /* Dòng quan trọng dưới đây giúp vòng quay xoay chậm dần đều trong 4 giây cực mượt */
+    transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1); 
 }
 
 .arrow {
