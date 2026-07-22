@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOPEST VIỆT NAM - Vòng Quay May Mắn</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Logo & Tiêu đề -->
+        <div class="header-section">
+            <img src="logo.png" alt="STOPEST Việt Nam" class="logo">
+            <h1>STOPEST VIỆT NAM</h1>
+            <p class="subtitle">Chương trình tri ân khách hàng</p>
+        </div>
+
+        <!-- Khung nội dung chính -->
+        <div class="card">
+            <h2>🎁 Vòng Quay May Mắn</h2>
+            <p class="desc">Nhập thông tin để nhận 01 lượt quay và có cơ hội nhận ưu đãi hấp dẫn.</p>
+
+            <!-- Form Nhập Thông Tin -->
+            <div id="input-fields">
+                <div class="input-group">
+                    <input type="text" id="fullname" placeholder="Họ và tên" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="phone" placeholder="Số điện thoại" required>
+                </div>
+            </div>
+
+            <p id="status-message" class="status-msg"></p>
+
+            <!-- Khu vực Vòng Quay -->
+            <div class="wheel-wrapper">
+                <div class="arrow"></div>
+                <canvas id="wheelCanvas" width="400" height="400"></canvas>
+            </div>
+
+            <!-- Nút Quay -->
+            <button id="spin-btn">QUAY NGAY</button>
+
+            <!-- Hộp Kết Quả -->
+            <div id="result-box" class="result-box hidden">
+                <p class="congrats">🎉 Chúc mừng!</p>
+                <p id="result-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
