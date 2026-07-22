@@ -1,10 +1,10 @@
 // Cấu hình 5 ô xen kẽ hai màu Đỏ thẫm (#a30000) và Trắng (#ffffff)
 const prizes = [
-    { text: "10%", color: "#a30000", textColor: "#ffffff" },
-    { text: "20%", color: "#ffffff", textColor: "#a30000" },
-    { text: "30%", color: "#a30000", textColor: "#ffffff" },
-    { text: "50%", color: "#ffffff", textColor: "#a30000" },
-    { text: "70%", color: "#a30000", textColor: "#ffffff" }
+    { text: "10%", color: "#ff9966", textColor: "#ffffff" }, // Cam đất pastel
+    { text: "20%", color: "#ffe066", textColor: "#8a6d00" }, // Vàng dịu
+    { text: "30%", color: "#ff8888", textColor: "#ffffff" }, // Hồng dâu pastel
+    { text: "50%", color: "#74c0fc", textColor: "#ffffff" }, // Xanh dương nhạt
+    { text: "70%", color: "#63e6be", textColor: "#0ca678" }  // Xanh mint tươi mát
 ];
 
 const canvas = document.getElementById("wheelCanvas");
@@ -12,6 +12,8 @@ const ctx = canvas.getContext("2d");
 const numSegments = prizes.length;
 const segmentAngle = (2 * Math.PI) / numSegments;
 let isSpinning = false;
+
+// Các hàm vẽ drawWheel() và xử lý logic startSpin(), sendDataToGoogle()... ở bên dưới giữ nguyên không đổi.
 
 // Hàm tự động tạo lập vòng quay
 function drawWheel() {
@@ -29,12 +31,10 @@ function drawWheel() {
         ctx.fillStyle = prizes[i].color;
         ctx.fill();
         
-        // Viền kẻ mỏng màu đỏ phân tách các ô màu trắng và ngược lại
         ctx.lineWidth = 2;
         ctx.strokeStyle = prizes[i].color === "#ffffff" ? "#a30000" : "#ffffff";
         ctx.stroke();
 
-        // Xử lý hướng chữ chuẩn tâm, ngăn chặn lật chữ ngược đầu
         ctx.save();
         ctx.translate(radius, radius);
         const midAngle = startAngle + segmentAngle / 2;
@@ -57,7 +57,6 @@ window.onload = function() {
         spinBtn.onclick = startSpin;
     }
 
-    // Tách biệt Khóa bảo mật cục bộ của Repo này sang bộ khóa v2 tránh đè dữ liệu
     const deviceHasSpun = localStorage.getItem('stopest_v2_device_spun');
     const savedPrize = localStorage.getItem('stopest_v2_device_prize');
 
@@ -95,7 +94,6 @@ function startSpin() {
         return;
     }
 
-    // Độc lập kiểm tra chặn trùng lặp Số Điện Thoại
     let usedPhones = JSON.parse(localStorage.getItem('stopest_v2_used_phones')) || [];
     if (usedPhones.includes(phone)) {
         alert("Số điện thoại này đã tham gia quay thưởng trước đó rồi!");
@@ -106,7 +104,6 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    // Giữ tỷ lệ 15% cho giải 70% (nằm ở index thứ 4)
     const rand = Math.floor(Math.random() * 100) + 1;
     let prizeIndex = 0;
 
@@ -117,7 +114,6 @@ function startSpin() {
         prizeIndex = remainders[Math.floor(Math.random() * remainders.length)];
     }
     
-    // Căn góc dừng chính xác hướng tâm chỉ lên kim đỉnh 12h
     const targetAngleDegree = 270 - (prizeIndex * 72 + 36);
     const totalRotation = 2880 + targetAngleDegree; 
 
@@ -144,16 +140,36 @@ function startSpin() {
     }, 4000); 
 }
 
-// Hàm gửi dữ liệu chính xác về URL Google Form của bạn
+// Hàm gửi dữ liệu ngầm chuẩn qua iframe không sợ lỗi CORS trình duyệt
 function sendDataToGoogle(name, phone, prize) {
     const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeboYa4TZbA28yF3Tnlf_EVdLgy7tYRNxIIOpLJjYtqJVNIbQ/formResponse";
     const prizeText = "Ưu đãi " + prize; 
-    const finalUrl = `${baseUrl}?entry.810076137=${encodeURIComponent(name)}&entry.1928279920=${encodeURIComponent(phone)}&entry.2010302772=${encodeURIComponent(prizeText)}&submit=Submit`;
+    
+    // Tạo form ảo để submit vào iframe ẩn
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = baseUrl;
+    form.target = 'hidden_iframe'; // Đẩy luồng xử lý vào iframe ẩn
 
-    const newWindow = window.open(finalUrl, '_blank');
-    if (newWindow) {
-        setTimeout(() => {
-            newWindow.close();
-        }, 600); 
-    }
-}
+    const nameInput = document.createElement('input');
+    nameInput.type = 'hidden';
+    nameInput.name = 'entry.810076137';
+    nameInput.value = name;
+    form.appendChild(nameInput);
+
+    const phoneInput = document.createElement('input');
+    phoneInput.type = 'hidden';
+    phoneInput.name = 'entry.1928279920';
+    phoneInput.value = phone;
+    form.appendChild(phoneInput);
+
+    const prizeInput = document.createElement('input');
+    prizeInput.type = 'hidden';
+    prizeInput.name = 'entry.2010302772';
+    prizeInput.value = prizeText;
+    form.appendChild(prizeInput);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}V
