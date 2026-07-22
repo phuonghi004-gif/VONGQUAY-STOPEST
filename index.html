@@ -3,31 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vòng Quay May Mắn - STOPEST Vietnam</title>
+    <title>Vòng Quay May Mắn - StoPest Vietnam</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Logo thương hiệu nằm trên cùng giống bản gốc -->
+    <div class="brand-container">
+        <img src="logo.png" alt="StoPest Logo" class="brand-logo">
+        <h1>STOPEST VIỆT NAM</h1>
+        <p>Chương trình tri ân khách hàng</p>
+    </div>
+
     <div class="container">
+        <h3>🎁 Vòng Quay May Mắn</h3>
+        <p class="subtitle">Nhập thông tin để nhận 01 lượt quay và có cơ hội nhận ưu đãi hấp dẫn.</p>
+
         <!-- Khu vực hiển thị kết quả -->
         <div id="result-box" class="hidden">
             <h2 id="status-message">Chúc mừng bạn!</h2>
             <div id="result-text"></div>
         </div>
 
-        <!-- Vòng quay giữ nguyên thiết kế ảnh gốc -->
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <img src="wheel.png" id="wheelImage" alt="Vòng quay STOPEST">
-        </div>
-
-        <!-- Nút bấm và Form nhập liệu -->
+        <!-- Form nhập liệu đặt lên trên vòng quay giống thiết kế cũ -->
         <div class="form-container">
             <div id="input-fields">
                 <input type="text" id="fullname" placeholder="Họ và tên" required>
                 <input type="tel" id="phone" placeholder="Số điện thoại" required>
             </div>
-            <button id="spin-btn">QUAY NGAY</button>
         </div>
+
+        <!-- Vòng quay Canvas kèm kim tam giác màu đỏ chuẩn chỉnh -->
+        <div class="wheel-container">
+            <div class="pointer-triangle"></div>
+            <canvas id="wheelCanvas" width="500" height="500"></canvas> 
+        </div>
+
+        <!-- Nút bấm đặt ở dưới cùng -->
+        <button id="spin-btn">QUAY NGAY</button>
     </div>
 
     <script src="script.js"></script>
