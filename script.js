@@ -1,57 +1,16 @@
-// Cấu hình vòng quay đúng 5 ô cho thoáng mắt
-const prizes = [
-    { text: "10%", color: "#a30000", textColor: "#ffffff" },
-    { text: "20%", color: "#ffffff", textColor: "#a30000" },
-    { text: "30%", color: "#a30000", textColor: "#ffffff" },
-    { text: "50%", color: "#ffffff", textColor: "#a30000" },
-    { text: "70%", color: "#a30000", textColor: "#ffffff" }
-];
+// Danh sách giải thưởng khớp theo thứ tự các ô trên ảnh của bạn từ góc 0 độ
+const prizes = ["10%", "20%", "30%", "50%", "70%"]; 
 
-const canvas = document.getElementById("wheelCanvas");
-const ctx = canvas.getContext("2d");
-const numSegments = prizes.length;
-const segmentAngle = (2 * Math.PI) / numSegments; // Mỗi ô rộng 72 độ (360 / 5)
+const wheelImage = document.getElementById("wheelImage");
 let isSpinning = false;
 
-// Hàm vẽ vòng quay 5 ô
-function drawWheel() {
-    if (!canvas || !ctx) return;
-    const radius = canvas.width / 2;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < numSegments; i++) {
-        const startAngle = i * segmentAngle;
-        const endAngle = startAngle + segmentAngle;
-
-        ctx.beginPath();
-        ctx.moveTo(radius, radius);
-        ctx.arc(radius, radius, radius - 2, startAngle, endAngle);
-        ctx.fillStyle = prizes[i].color;
-        ctx.fill();
-        
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "#a30000";
-        ctx.stroke();
-
-        ctx.save();
-        ctx.translate(radius, radius);
-        ctx.rotate(startAngle + segmentAngle / 2);
-        ctx.textAlign = "right";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = prizes[i].textColor;
-        ctx.font = "bold 24px 'Segoe UI', Arial, sans-serif"; // Chữ to rõ ràng vì ô rất rộng
-        ctx.fillText(prizes[i].text, radius - 40, 0);
-        ctx.restore();
-    }
-}
-
 window.onload = function() {
-    drawWheel();
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) {
         spinBtn.onclick = startSpin;
     }
 
+    // Kiểm tra chặn thiết bị dựa trên bộ khóa riêng của web thứ hai
     const deviceHasSpun = localStorage.getItem('stopest_v2_device_spun');
     const savedPrize = localStorage.getItem('stopest_v2_device_prize');
 
@@ -77,7 +36,6 @@ function startSpin() {
 
     const nameInput = document.getElementById('fullname');
     const phoneInput = document.getElementById('phone');
-
     const fullname = nameInput ? nameInput.value.trim() : "";
     const phone = phoneInput ? phoneInput.value.trim() : "";
 
@@ -90,6 +48,7 @@ function startSpin() {
         return;
     }
 
+    // Kiểm tra chặn số điện thoại trùng lặp
     let usedPhones = JSON.parse(localStorage.getItem('stopest_v2_used_phones')) || [];
     if (usedPhones.includes(phone)) {
         alert("Số điện thoại này đã tham gia quay thưởng trước đó rồi!");
@@ -100,28 +59,27 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    // THUẬT TOÁN ĐIỀU CHỈNH XÁC XUẤT CHÍNH XÁC:
-    // Tạo số ngẫu nhiên từ 1 đến 100
+    // Thuật toán tính xác suất: 15% trúng ô 70% (nằm ở index cuối cùng - số 4)
     const rand = Math.floor(Math.random() * 100) + 1;
     let prizeIndex = 0;
 
     if (rand <= 15) {
-        prizeIndex = 4; // 15% xác suất trúng ô số 4 (70%)
+        prizeIndex = 4; // Ô 70%
     } else {
-        // 85% còn lại chia đều cho 4 ô còn lại (Mỗi ô hưởng ~21.25%)
-        const remainders = [0, 1, 2, 3];
+        const remainders = [0, 1, 2, 3]; // Phân bổ ngẫu nhiên 85% còn lại cho các ô khác
         prizeIndex = remainders[Math.floor(Math.random() * remainders.length)];
     }
     
-    // Thuật toán tính góc quay chuẩn xác cho hệ 5 ô (Mỗi ô 72 độ) để trúng đúng ô đã chọn
-    // Kim nằm ở góc 270 độ. Tâm ô thứ i là: (i * 72) + 36.
+    // Tính toán góc quay cho hệ 5 ô (Mỗi ô rộng 72 độ) để tâm ô dừng đúng kim chỉ đỉnh (270 độ)
     const targetAngleDegree = 270 - (prizeIndex * 72 + 36);
-    const totalRotation = 2880 + targetAngleDegree; 
+    const totalRotation = 2880 + targetAngleDegree; // Quay đủ 8 vòng rồi dừng chính xác
 
-    canvas.style.transform = `rotate(${totalRotation}deg)`;
+    if (wheelImage) {
+        wheelImage.style.transform = `rotate(${totalRotation}deg)`;
+    }
 
     setTimeout(() => {
-        const finalPrize = prizes[prizeIndex].text;
+        const finalPrize = prizes[prizeIndex];
         const displayPrize = "Ưu đãi " + finalPrize;
         
         if (document.getElementById('result-text')) document.getElementById('result-text').innerText = displayPrize;
@@ -130,12 +88,15 @@ function startSpin() {
         if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Chúc mừng bạn đã trúng giải!";
         if (document.getElementById('input-fields')) document.getElementById('input-fields').style.display = 'none';
 
+        // Lưu thông tin chặn thiết bị
         localStorage.setItem('stopest_v2_device_spun', 'true');
         localStorage.setItem('stopest_v2_device_prize', displayPrize);
 
+        // Lưu thông tin chặn số điện thoại
         usedPhones.push(phone);
         localStorage.setItem('stopest_v2_used_phones', JSON.stringify(usedPhones));
 
+        // Gửi dữ liệu đồng bộ lên Google Form
         sendDataToGoogle(fullname, phone, finalPrize);
         isSpinning = false;
     }, 4000); 
