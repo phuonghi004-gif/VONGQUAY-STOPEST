@@ -7,7 +7,6 @@
 
 body {
     background-color: #f4f6f9;
-    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,161 +15,114 @@ body {
 }
 
 .container {
+    background: #ffffff;
+    max-width: 450px;
     width: 100%;
-    max-width: 500px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
     text-align: center;
 }
 
-.header-section {
-    margin-bottom: 20px;
+/* Khu vực hiển thị kết quả */
+#result-box {
+    background: #fff9e6;
+    border: 2px dashed #ffcc00;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 25px;
 }
 
-.logo {
-    max-width: 200px;
-    height: auto;
-    margin-bottom: 10px;
+#result-box.hidden {
+    display: none;
 }
 
-h1 {
-    color: #a30000; /* Màu đỏ thẫm STOPEST */
-    font-size: 24px;
-    font-weight: bold;
+#status-message {
+    color: #a30000;
+    font-size: 1.2rem;
     margin-bottom: 5px;
 }
 
-.subtitle {
-    font-size: 16px;
-    color: #555;
-}
-
-.card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 30px 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
-
-.card h2 {
-    color: #a30000;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
-.desc {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 20px;
-    padding: 0 10px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-}
-
-input {
-    width: 100%;
-    padding: 12px 20px;
-    border: 1px solid #e2e8f0;
-    background-color: #f1f5f9;
-    border-radius: 12px;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-input:focus {
-    border-color: #a30000;
-    background-color: #fff;
-}
-
-.status-msg {
+#result-text {
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #a30000;
-    margin: 10px 0;
+    color: #ff8800;
 }
 
-/* Khung vòng quay & Mũi tên chỉ */
-.wheel-wrapper {
+/* Khu vực Vòng quay dạng ảnh gốc */
+.wheel-container {
     position: relative;
     width: 320px;
     height: 320px;
-    margin: 25px auto;
+    margin: 0 auto 30px auto;
 }
 
-#wheelCanvas {
+#wheelImage {
     width: 100%;
     height: 100%;
-    border-radius: 50%;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    /* Dòng quan trọng dưới đây giúp vòng quay xoay chậm dần đều trong 4 giây cực mượt */
-    transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1); 
+    object-fit: contain;
+    /* Hiệu ứng xoay mượt mà trong 4 giây */
+    transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1);
 }
 
-.arrow {
+/* Kim chỉ phần thưởng ở đỉnh vòng quay */
+.pointer {
     position: absolute;
     top: -15px;
     left: 50%;
     transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-top: 25px solid #a30000; /* Kim chỉ màu đỏ thẫm */
+    width: 40px;
+    height: 40px;
+    background: url('pointer.png') no-repeat center center/contain;
     z-index: 10;
 }
 
-/* Nút bấm quay */
+/* Form nhập liệu và nút bấm */
+.form-container {
+    width: 100%;
+}
+
+#input-fields input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s;
+}
+
+#input-fields input:focus {
+    border-color: #a30000;
+}
+
 #spin-btn {
     width: 100%;
-    background-color: #a30000;
-    color: white;
     padding: 14px;
+    background: #a30000;
+    color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(163, 0, 0, 0.3);
+    transition: background 0.2s, transform 0.1s;
 }
 
 #spin-btn:hover {
-    background-color: #820000;
+    background: #820000;
+}
+
+#spin-btn:active {
+    transform: scale(0.98);
 }
 
 #spin-btn:disabled {
-    background-color: #cccccc;
+    background: #cccccc;
     color: #666666;
     cursor: not-allowed;
-}
-
-/* Kết quả trúng thưởng */
-.result-box {
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 12px;
-    background-color: #fff5f5;
-    border: 1px dashed #a30000;
-    animation: fadeIn 0.5s ease forwards;
-}
-
-.congrats {
-    font-size: 16px;
-    font-weight: bold;
-    color: #a30000;
-}
-
-#result-text {
-    font-size: 20px;
-    font-weight: bold;
-    color: #a30000;
-    margin-top: 5px;
-}
-
-.hidden {
-    display: none;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    box-shadow: none;
+    transform: none;
 }
