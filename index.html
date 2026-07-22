@@ -3,51 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STOPEST VIỆT NAM - Vòng Quay May Mắn</title>
+    <title>Vòng Quay May Mắn - STOPEST Vietnam</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Khu vực hiển thị Logo thương hiệu phía trên -->
+    <div class="brand-container">
+        <img src="logo.png" alt="STOPEST Logo" class="brand-logo" onerror="this.style.display='none'">
+        <h1>STOPEST VIỆT NAM</h1>
+        <p>Chương trình tri ân khách hàng</p>
+    </div>
 
+    <!-- Khung giao diện chính nằm giữa -->
     <div class="container">
-        <!-- Logo & Tiêu đề -->
-        <div class="header-section">
-            <img src="logo.png" alt="STOPEST Việt Nam" class="logo">
-            <h1>STOPEST VIỆT NAM</h1>
-            <p class="subtitle">Chương trình tri ân khách hàng</p>
+        <h3>🎁 Vòng Quay May Mắn</h3>
+        <p class="subtitle">Nhập thông tin để nhận 01 lượt quay và có cơ hội nhận ưu đãi hấp dẫn.</p>
+
+        <!-- Hộp thông báo kết quả trúng thưởng -->
+        <div id="result-box" class="hidden">
+            <h2 id="status-message">Chúc mừng bạn!</h2>
+            <div id="result-text"></div>
         </div>
 
-        <!-- Khung nội dung chính -->
-        <div class="card">
-            <h2>🎁 Vòng Quay May Mắn</h2>
-            <p class="desc">Nhập thông tin để nhận 01 lượt quay và có cơ hội nhận ưu đãi hấp dẫn.</p>
-
-            <!-- Form Nhập Thông Tin -->
+        <!-- Form nhập liệu đặt trên vòng quay -->
+        <div class="form-container">
             <div id="input-fields">
-                <div class="input-group">
-                    <input type="text" id="fullname" placeholder="Họ và tên" required>
-                </div>
-                <div class="input-group">
-                    <input type="tel" id="phone" placeholder="Số điện thoại" required>
-                </div>
-            </div>
-
-            <p id="status-message" class="status-msg"></p>
-
-            <!-- Khu vực Vòng Quay -->
-            <div class="wheel-wrapper">
-                <div class="arrow"></div>
-                <canvas id="wheelCanvas" width="400" height="400"></canvas>
-            </div>
-
-            <!-- Nút Quay -->
-            <button id="spin-btn">QUAY NGAY</button>
-
-            <!-- Hộp Kết Quả -->
-            <div id="result-box" class="result-box hidden">
-                <p class="congrats">🎉 Chúc mừng!</p>
-                <p id="result-text"></p>
+                <input type="text" id="fullname" placeholder="Họ và tên" required>
+                <input type="tel" id="phone" placeholder="Số điện thoại" required>
             </div>
         </div>
+
+        <!-- Khu vực vòng quay canvas tự vẽ sắc nét kèm kim chỉ tam giác đỏ -->
+        <div class="wheel-container">
+            <div class="pointer-triangle"></div>
+            <canvas id="wheelCanvas" width="500" height="500"></canvas> 
+        </div>
+
+        <!-- Nút bấm thực hiện hành động quay -->
+        <button id="spin-btn">QUAY NGAY</button>
     </div>
 
     <script src="script.js"></script>
