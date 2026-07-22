@@ -1,10 +1,10 @@
-// Cấu hình màu pastel nhẹ nhàng y hệt thiết kế nguyên bản, chia đều 5 ô rõ ràng
+// Cấu hình màu sắc nhã nhặn, chữ hiển thị rõ ràng
 const prizes = [
-    { text: "10%", color: "#ff9966", textColor: "#ffffff" }, // Cam đậm
-    { text: "20%", color: "#ffcc66", textColor: "#cc5500" }, // Vàng pastel
-    { text: "30%", color: "#ff8888", textColor: "#ffffff" }, // Hồng nhạt
-    { text: "50%", color: "#ffdd99", textColor: "#cc5500" }, // Vàng kem
-    { text: "70%", color: "#ffaa66", textColor: "#ffffff" }  // Cam sáng
+    { text: "10%", color: "#ff9966", textColor: "#ffffff" },
+    { text: "20%", color: "#ffcc66", textColor: "#cc5500" },
+    { text: "30%", color: "#ff8888", textColor: "#ffffff" },
+    { text: "50%", color: "#ffdd99", textColor: "#cc5500" },
+    { text: "70%", color: "#ffaa66", textColor: "#ffffff" }
 ];
 
 const canvas = document.getElementById("wheelCanvas");
@@ -13,7 +13,6 @@ const numSegments = prizes.length;
 const segmentAngle = (2 * Math.PI) / numSegments;
 let isSpinning = false;
 
-// Hàm tự động vẽ 5 ô tròn trịa sắc nét
 function drawWheel() {
     if (!canvas || !ctx) return;
     const radius = canvas.width / 2;
@@ -23,24 +22,33 @@ function drawWheel() {
         const startAngle = i * segmentAngle;
         const endAngle = startAngle + segmentAngle;
 
+        // Vẽ phân vùng ô màu
         ctx.beginPath();
         ctx.moveTo(radius, radius);
         ctx.arc(radius, radius, radius - 2, startAngle, endAngle);
         ctx.fillStyle = prizes[i].color;
         ctx.fill();
         
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = "#ffffff"; // Viền trắng ngăn cách giữa các ô cực sang
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#ffffff"; 
         ctx.stroke();
 
+        // Vẽ chữ hiển thị phần trăm (Đã xử lý chống lộn ngược đầu)
         ctx.save();
         ctx.translate(radius, radius);
-        ctx.rotate(startAngle + segmentAngle / 2);
-        ctx.textAlign = "right";
+        
+        // Tính toán góc ở giữa của phân đoạn
+        const midAngle = startAngle + segmentAngle / 2;
+        ctx.rotate(midAngle);
+        
+        // Căn chỉnh chữ hướng từ viền vào tâm để không bao giờ bị ngược chữ
+        ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStyle = prizes[i].textColor;
-        ctx.font = "bold 30px 'Segoe UI', Arial, sans-serif";
-        ctx.fillText(prizes[i].text, radius - 50, 0);
+        ctx.font = "bold 32px 'Segoe UI', Arial, sans-serif";
+        
+        // Di chuyển chữ ra rìa vòng quay một khoảng vừa phải
+        ctx.fillText(prizes[i].text, radius * 0.65, 0);
         ctx.restore();
     }
 }
@@ -61,7 +69,7 @@ window.onload = function() {
             spinBtn.disabled = true;
             spinBtn.innerText = "ĐÃ HẾT LƯỢT QUAY";
         }
-        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Thiết bị của bạn đã tham gia chương trình rồi!";
+        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Thiết bị của bạn đã tham gia!";
         if (document.getElementById('result-text')) document.getElementById('result-text').innerText = savedPrize;
         if (document.getElementById('result-box')) document.getElementById('result-box').classList.remove('hidden');
     }
@@ -91,7 +99,7 @@ function startSpin() {
 
     let usedPhones = JSON.parse(localStorage.getItem('stopest_v2_used_phones')) || [];
     if (usedPhones.includes(phone)) {
-        alert("Số điện thoại này đã tham gia quay thưởng trước đó rồi!");
+        alert("Số điện thoại này đã tham gia quay thưởng trước đó!");
         return;
     }
 
@@ -99,7 +107,7 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    // Xác suất 15% trúng giải 70% (nằm ở vị trí index số 4)
+    // Tỷ lệ trúng giải 70% là 15% (index số 4)
     const rand = Math.floor(Math.random() * 100) + 1;
     let prizeIndex = 0;
 
@@ -110,7 +118,7 @@ function startSpin() {
         prizeIndex = remainders[Math.floor(Math.random() * remainders.length)];
     }
     
-    // Kim nằm ở đỉnh (270 độ). Tính góc xoay chính xác cho ảnh 5 ô canvas
+    // Thuật toán xoay khớp chuẩn với kim chỉ 12h đỉnh màn hình
     const targetAngleDegree = 270 - (prizeIndex * 72 + 36);
     const totalRotation = 2880 + targetAngleDegree; 
 
