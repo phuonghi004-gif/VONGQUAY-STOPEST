@@ -1,16 +1,57 @@
-// Danh sách giải thưởng khớp theo thứ tự các ô trên ảnh của bạn từ góc 0 độ
-const prizes = ["10%", "20%", "30%", "50%", "70%"]; 
+// Cấu hình màu pastel nhẹ nhàng y hệt thiết kế nguyên bản, chia đều 5 ô rõ ràng
+const prizes = [
+    { text: "10%", color: "#ff9966", textColor: "#ffffff" }, // Cam đậm
+    { text: "20%", color: "#ffcc66", textColor: "#cc5500" }, // Vàng pastel
+    { text: "30%", color: "#ff8888", textColor: "#ffffff" }, // Hồng nhạt
+    { text: "50%", color: "#ffdd99", textColor: "#cc5500" }, // Vàng kem
+    { text: "70%", color: "#ffaa66", textColor: "#ffffff" }  // Cam sáng
+];
 
-const wheelImage = document.getElementById("wheelImage");
+const canvas = document.getElementById("wheelCanvas");
+const ctx = canvas.getContext("2d");
+const numSegments = prizes.length;
+const segmentAngle = (2 * Math.PI) / numSegments;
 let isSpinning = false;
 
+// Hàm tự động vẽ 5 ô tròn trịa sắc nét
+function drawWheel() {
+    if (!canvas || !ctx) return;
+    const radius = canvas.width / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < numSegments; i++) {
+        const startAngle = i * segmentAngle;
+        const endAngle = startAngle + segmentAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius - 2, startAngle, endAngle);
+        ctx.fillStyle = prizes[i].color;
+        ctx.fill();
+        
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#ffffff"; // Viền trắng ngăn cách giữa các ô cực sang
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(radius, radius);
+        ctx.rotate(startAngle + segmentAngle / 2);
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = prizes[i].textColor;
+        ctx.font = "bold 30px 'Segoe UI', Arial, sans-serif";
+        ctx.fillText(prizes[i].text, radius - 50, 0);
+        ctx.restore();
+    }
+}
+
 window.onload = function() {
+    drawWheel();
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) {
         spinBtn.onclick = startSpin;
     }
 
-    // Kiểm tra chặn thiết bị dựa trên bộ khóa riêng của web thứ hai
     const deviceHasSpun = localStorage.getItem('stopest_v2_device_spun');
     const savedPrize = localStorage.getItem('stopest_v2_device_prize');
 
@@ -20,7 +61,7 @@ window.onload = function() {
             spinBtn.disabled = true;
             spinBtn.innerText = "ĐÃ HẾT LƯỢT QUAY";
         }
-        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Thiết bị của bạn đã tham gia chương trình này rồi!";
+        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Thiết bị của bạn đã tham gia chương trình rồi!";
         if (document.getElementById('result-text')) document.getElementById('result-text').innerText = savedPrize;
         if (document.getElementById('result-box')) document.getElementById('result-box').classList.remove('hidden');
     }
@@ -48,7 +89,6 @@ function startSpin() {
         return;
     }
 
-    // Kiểm tra chặn số điện thoại trùng lặp
     let usedPhones = JSON.parse(localStorage.getItem('stopest_v2_used_phones')) || [];
     if (usedPhones.includes(phone)) {
         alert("Số điện thoại này đã tham gia quay thưởng trước đó rồi!");
@@ -59,27 +99,25 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    // Thuật toán tính xác suất: 15% trúng ô 70% (nằm ở index cuối cùng - số 4)
+    // Xác suất 15% trúng giải 70% (nằm ở vị trí index số 4)
     const rand = Math.floor(Math.random() * 100) + 1;
     let prizeIndex = 0;
 
     if (rand <= 15) {
-        prizeIndex = 4; // Ô 70%
+        prizeIndex = 4; 
     } else {
-        const remainders = [0, 1, 2, 3]; // Phân bổ ngẫu nhiên 85% còn lại cho các ô khác
+        const remainders = [0, 1, 2, 3];
         prizeIndex = remainders[Math.floor(Math.random() * remainders.length)];
     }
     
-    // Tính toán góc quay cho hệ 5 ô (Mỗi ô rộng 72 độ) để tâm ô dừng đúng kim chỉ đỉnh (270 độ)
+    // Kim nằm ở đỉnh (270 độ). Tính góc xoay chính xác cho ảnh 5 ô canvas
     const targetAngleDegree = 270 - (prizeIndex * 72 + 36);
-    const totalRotation = 2880 + targetAngleDegree; // Quay đủ 8 vòng rồi dừng chính xác
+    const totalRotation = 2880 + targetAngleDegree; 
 
-    if (wheelImage) {
-        wheelImage.style.transform = `rotate(${totalRotation}deg)`;
-    }
+    canvas.style.transform = `rotate(${totalRotation}deg)`;
 
     setTimeout(() => {
-        const finalPrize = prizes[prizeIndex];
+        const finalPrize = prizes[prizeIndex].text;
         const displayPrize = "Ưu đãi " + finalPrize;
         
         if (document.getElementById('result-text')) document.getElementById('result-text').innerText = displayPrize;
@@ -88,15 +126,12 @@ function startSpin() {
         if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Chúc mừng bạn đã trúng giải!";
         if (document.getElementById('input-fields')) document.getElementById('input-fields').style.display = 'none';
 
-        // Lưu thông tin chặn thiết bị
         localStorage.setItem('stopest_v2_device_spun', 'true');
         localStorage.setItem('stopest_v2_device_prize', displayPrize);
 
-        // Lưu thông tin chặn số điện thoại
         usedPhones.push(phone);
         localStorage.setItem('stopest_v2_used_phones', JSON.stringify(usedPhones));
 
-        // Gửi dữ liệu đồng bộ lên Google Form
         sendDataToGoogle(fullname, phone, finalPrize);
         isSpinning = false;
     }, 4000); 
