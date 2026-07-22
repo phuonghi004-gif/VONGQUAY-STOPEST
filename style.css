@@ -7,47 +7,38 @@
 
 body {
     background-color: #f7f9fa;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    padding: 30px 15px;
+    padding: 20px 10px;
+    display: block; /* Bỏ flex-direction để tránh bị đẩy lệch ngang */
 }
 
-/* Header logo phía trên */
+/* Header logo phía trên - Căn giữa chuẩn */
 .brand-container {
     text-align: center;
-    margin-bottom: 20px;
-}
-
-.brand-logo {
-    max-width: 180px;
-    height: auto;
-    display: block;
-    margin: 0 auto 10px auto;
+    margin: 10px auto 20px auto;
+    max-width: 450px;
 }
 
 .brand-container h1 {
     color: #cc0000;
     font-size: 1.6rem;
     font-weight: bold;
-    letter-spacing: 0.5px;
+    margin-bottom: 5px;
 }
 
 .brand-container p {
     color: #555555;
     font-size: 0.95rem;
-    margin-top: 5px;
 }
 
-/* Khung nội dung chính màu trắng bo góc */
+/* Khung nội dung chính màu trắng bo góc - Căn giữa màn hình */
 .container {
     background: #ffffff;
     max-width: 450px;
     width: 100%;
+    margin: 0 auto; /* Đảm bảo khung luôn nằm giữa màn hình */
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-    padding: 25px 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+    padding: 30px 20px;
     text-align: center;
 }
 
@@ -111,22 +102,24 @@ body {
     background-color: #ffffff;
 }
 
-/* Vòng quay hiệu ứng */
+/* Vòng quay hiệu ứng - Giới hạn kích thước chuẩn nằm gọn trong khung trắng */
 .wheel-container {
     position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 0 auto 25px auto;
+    width: 280px;  /* Đặt kích thước cố định vừa vặn */
+    height: 280px; /* Đặt kích thước cố định vừa vặn */
+    margin: 0 auto 25px auto; /* Căn giữa vòng quay */
+    overflow: visible;
 }
 
 #wheelCanvas {
     width: 100%;
     height: 100%;
     border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1);
 }
 
-/* Kim chỉ hình tam giác đỏ chuẩn góc trên đỉnh */
+/* Kim chỉ hình tam giác đỏ chuẩn góc trên đỉnh vòng quay */
 .pointer-triangle {
     position: absolute;
     top: -12px;
@@ -151,6 +144,7 @@ body {
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(163, 0, 0, 0.2);
     transition: background 0.2s;
 }
 
@@ -162,4 +156,5 @@ body {
     background: #cccccc;
     color: #666666;
     cursor: not-allowed;
+    box-shadow: none;
 }
