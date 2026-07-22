@@ -1,38 +1,21 @@
-// Cấu hình 20 ô cho VONGQUAY-STOPEST - Tỉ lệ 70% xuất hiện 3 lần (15%)
+// Cấu hình vòng quay đúng 5 ô cho thoáng mắt
 const prizes = [
     { text: "10%", color: "#a30000", textColor: "#ffffff" },
     { text: "20%", color: "#ffffff", textColor: "#a30000" },
     { text: "30%", color: "#a30000", textColor: "#ffffff" },
     { text: "50%", color: "#ffffff", textColor: "#a30000" },
-    { text: "70%", color: "#a30000", textColor: "#ffffff" }, // 1
-    
-    { text: "10%", color: "#ffffff", textColor: "#a30000" },
-    { text: "20%", color: "#a30000", textColor: "#ffffff" },
-    { text: "30%", color: "#ffffff", textColor: "#a30000" },
-    { text: "50%", color: "#a30000", textColor: "#ffffff" },
-    { text: "10%", color: "#ffffff", textColor: "#a30000" },
-    
-    { text: "20%", color: "#a30000", textColor: "#ffffff" },
-    { text: "30%", color: "#ffffff", textColor: "#a30000" },
-    { text: "50%", color: "#a30000", textColor: "#ffffff" },
-    { text: "70%", color: "#ffffff", textColor: "#a30000" }, // 2
-    { text: "10%", color: "#a30000", textColor: "#ffffff" },
-    
-    { text: "20%", color: "#ffffff", textColor: "#a30000" },
-    { text: "30%", color: "#a30000", textColor: "#ffffff" },
-    { text: "50%", color: "#ffffff", textColor: "#a30000" },
-    { text: "70%", color: "#a30000", textColor: "#ffffff" }, // 3
-    { text: "10%", color: "#ffffff", textColor: "#a30000" }
+    { text: "70%", color: "#a30000", textColor: "#ffffff" }
 ];
 
 const canvas = document.getElementById("wheelCanvas");
 const ctx = canvas.getContext("2d");
 const numSegments = prizes.length;
-const segmentAngle = (2 * Math.PI) / numSegments;
+const segmentAngle = (2 * Math.PI) / numSegments; // Mỗi ô rộng 72 độ (360 / 5)
 let isSpinning = false;
 
+// Hàm vẽ vòng quay 5 ô
 function drawWheel() {
-    if (!canvas) return;
+    if (!canvas || !ctx) return;
     const radius = canvas.width / 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -46,7 +29,7 @@ function drawWheel() {
         ctx.fillStyle = prizes[i].color;
         ctx.fill();
         
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 2;
         ctx.strokeStyle = "#a30000";
         ctx.stroke();
 
@@ -56,8 +39,8 @@ function drawWheel() {
         ctx.textAlign = "right";
         ctx.textBaseline = "middle";
         ctx.fillStyle = prizes[i].textColor;
-        ctx.font = "bold 15px 'Segoe UI'";
-        ctx.fillText(prizes[i].text, radius - 20, 0);
+        ctx.font = "bold 24px 'Segoe UI', Arial, sans-serif"; // Chữ to rõ ràng vì ô rất rộng
+        ctx.fillText(prizes[i].text, radius - 40, 0);
         ctx.restore();
     }
 }
@@ -66,10 +49,9 @@ window.onload = function() {
     drawWheel();
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) {
-        spinBtn.addEventListener('click', startSpin);
+        spinBtn.onclick = startSpin;
     }
 
-    // Tách biệt bộ nhớ bằng key biệt lập (_v2) để không đụng hàng với web thứ 1
     const deviceHasSpun = localStorage.getItem('stopest_v2_device_spun');
     const savedPrize = localStorage.getItem('stopest_v2_device_prize');
 
@@ -118,10 +100,22 @@ function startSpin() {
     const spinBtn = document.getElementById('spin-btn');
     if (spinBtn) spinBtn.disabled = true;
 
-    const prizeIndex = Math.floor(Math.random() * numSegments);
+    // THUẬT TOÁN ĐIỀU CHỈNH XÁC XUẤT CHÍNH XÁC:
+    // Tạo số ngẫu nhiên từ 1 đến 100
+    const rand = Math.floor(Math.random() * 100) + 1;
+    let prizeIndex = 0;
+
+    if (rand <= 15) {
+        prizeIndex = 4; // 15% xác suất trúng ô số 4 (70%)
+    } else {
+        // 85% còn lại chia đều cho 4 ô còn lại (Mỗi ô hưởng ~21.25%)
+        const remainders = [0, 1, 2, 3];
+        prizeIndex = remainders[Math.floor(Math.random() * remainders.length)];
+    }
     
-    // Thuật toán tính góc dừng chính xác ở tâm kim 12 giờ cho hệ 20 ô
-    const targetAngleDegree = 270 - (prizeIndex * 18 + 9);
+    // Thuật toán tính góc quay chuẩn xác cho hệ 5 ô (Mỗi ô 72 độ) để trúng đúng ô đã chọn
+    // Kim nằm ở góc 270 độ. Tâm ô thứ i là: (i * 72) + 36.
+    const targetAngleDegree = 270 - (prizeIndex * 72 + 36);
     const totalRotation = 2880 + targetAngleDegree; 
 
     canvas.style.transform = `rotate(${totalRotation}deg)`;
@@ -130,32 +124,19 @@ function startSpin() {
         const finalPrize = prizes[prizeIndex].text;
         const displayPrize = "Ưu đãi " + finalPrize;
         
-        if (document.getElementById('result-text')) {
-            document.getElementById('result-text').innerText = displayPrize;
-        }
-        if (document.getElementById('result-box')) {
-            document.getElementById('result-box').classList.remove('hidden');
-        }
-        if (spinBtn) {
-            spinBtn.innerText = "ĐÃ HẾT LƯỢT QUAY";
-        }
-        if (document.getElementById('status-message')) {
-            document.getElementById('status-message').innerText = "Chúc mừng bạn đã trúng giải!";
-        }
-        if (document.getElementById('input-fields')) {
-            document.getElementById('input-fields').style.display = 'none';
-        }
+        if (document.getElementById('result-text')) document.getElementById('result-text').innerText = displayPrize;
+        if (document.getElementById('result-box')) document.getElementById('result-box').classList.remove('hidden');
+        if (spinBtn) spinBtn.innerText = "ĐÃ HẾT LƯỢT QUAY";
+        if (document.getElementById('status-message')) document.getElementById('status-message').innerText = "Chúc mừng bạn đã trúng giải!";
+        if (document.getElementById('input-fields')) document.getElementById('input-fields').style.display = 'none';
 
-        // Lưu trạng thái độc lập cho web này
         localStorage.setItem('stopest_v2_device_spun', 'true');
         localStorage.setItem('stopest_v2_device_prize', displayPrize);
 
         usedPhones.push(phone);
         localStorage.setItem('stopest_v2_used_phones', JSON.stringify(usedPhones));
 
-        // Trả kết quả về đúng trang tính cũ
         sendDataToGoogle(fullname, phone, finalPrize);
-
         isSpinning = false;
     }, 4000); 
 }
