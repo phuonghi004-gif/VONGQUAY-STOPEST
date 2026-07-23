@@ -1,10 +1,10 @@
 // Cấu hình 5 ô xen kẽ hai màu Đỏ thẫm (#a30000) và Trắng (#ffffff)
 const prizes = [
-    { text: "10%", color: "#ff9966", textColor: "#ffffff" }, // Cam đất pastel
-    { text: "20%", color: "#ffe066", textColor: "#8a6d00" }, // Vàng dịu
-    { text: "30%", color: "#ff8888", textColor: "#ffffff" }, // Hồng dâu pastel
-    { text: "50%", color: "#74c0fc", textColor: "#ffffff" }, // Xanh dương nhạt
-    { text: "70%", color: "#63e6be", textColor: "#0ca678" }  // Xanh mint tươi mát
+    { text: "5%", color: "#ff9966", textColor: "#ffffff" }, // Cam đất pastel
+    { text: "10%", color: "#ffe066", textColor: "#8a6d00" }, // Vàng dịu
+    { text: "15%", color: "#ff8888", textColor: "#ffffff" }, // Hồng dâu pastel
+    { text: "20%", color: "#74c0fc", textColor: "#ffffff" }, // Xanh dương nhạt
+    { text: "30%", color: "#63e6be", textColor: "#0ca678" }  // Xanh mint tươi mát
 ];
 
 const canvas = document.getElementById("wheelCanvas");
@@ -107,7 +107,7 @@ function startSpin() {
     const rand = Math.floor(Math.random() * 100) + 1;
     let prizeIndex = 0;
 
-    if (rand <= 15) {
+    if (rand <= 7) {
         prizeIndex = 4; 
     } else {
         const remainders = [0, 1, 2, 3];
